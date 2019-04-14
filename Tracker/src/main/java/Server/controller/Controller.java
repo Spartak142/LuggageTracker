@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-// add log bag!!!
 // Implementations of the server's remote methods.
 public class Controller extends UnicastRemoteObject implements BagStorage {
 
@@ -23,7 +22,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
     private final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     private final DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("MMddHHmmss");
     private final String date = getDate();
-    private File log = new File("src\\main\\java\\Server\\log" + date + ".txt");
+    private final File log = new File("src\\main\\java\\Server\\log" + date + ".txt");
 
     public Controller(String datasource, String dbms) throws RemoteException, BDBException {
 
@@ -33,6 +32,8 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         System.out.println("successfully created BagsDAO");
     }
 
+    
+    //Creates account in the database if username is not used yet and the correct admin password is given
     @Override
     public synchronized void createAccount(String holderName, String password, String passphrase) throws AccountException {
         String acctExistsMsg = "Account for: " + holderName + " already exists";
@@ -56,6 +57,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         }
     }
 
+    //Logsin the user if the password is correct and the login is not used by another client
     @Override
     public synchronized String login(Client remoteNode, String holderName, String password) throws AccountException {
         String errMsg = "Could not search for account.";
@@ -86,6 +88,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
 
     }
 
+    //Logs out a user
     @Override
     public synchronized void logout(String user) throws IOException {
         writeToLog(user + "has successfully logged out.");
@@ -93,6 +96,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
 
     }
 
+    //Request to list all bags in the Storage Room
     @Override
     public synchronized List<? extends BagsDTO> listAll(String user) throws BDBException {
         try {
@@ -102,7 +106,30 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
             throw new BDBException("Unable to list accounts.", e);
         }
     }
+    
+    //Lists all bags in the Storage room left by a particular guest.
+    @Override
+    public List<? extends BagsDTO> listAllName(String owner, String user) throws RemoteException, BDBException {
+               try {
+            writeToLog("Request to see all bags stored for: '"+ owner+ "' has been made by " + user);
+            return bagsDB.findAllByOwner(owner);
+        } catch (Exception e) {
+            throw new BDBException("Unable to list accounts.", e);
+        }
+    }
 
+    //Lists all bags in the Storage room stored by a particular user
+    @Override
+    public List<? extends BagsDTO> listAllStoredBy(String storedBy, String user) throws RemoteException, BDBException {
+         try {
+            writeToLog("Request to see all bags stored by: '"+ storedBy+ "' has been made by " + user);
+            return bagsDB.findAllByOwner(storedBy);
+        } catch (Exception e) {
+            throw new BDBException("Unable to list accounts.", e);
+        }
+    }
+
+    //Request to add bag to the Storage Room 
     @Override
     public synchronized void addBag(BagsDTO bags) throws RemoteException, RejectedException, BDBException {
         int id = bags.getId();
@@ -120,6 +147,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         }
     }
 
+    //Request for information about a particular bag in the Storage Room
     @Override
     public synchronized BagsDTO getBag(int id, String user) throws BDBException {
         String errMsg = "Could not search for the bags.";
@@ -135,7 +163,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         }
     }
 
-    //Without witing to log used to check the bag right after updating it 
+    //Request for information about a particular bag in the Storage Room without witing to log used to check the bag right after updating it 
     @Override
     public synchronized BagsDTO getBag(int id) throws BDBException {
         String errMsg = "Could not search for the bags.";
@@ -150,7 +178,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         }
     }
 
-    //  Method to update info about the bag
+    //  Method to update info about the bag. Note that submitting a 0 as updated number of bags will not do anything
     @Override
     public synchronized Boolean change(int id, String user, int size, String room) throws RemoteException, RejectedException, BDBException {
         String failureMsg = "Could not change the following bag: " + id;
@@ -179,6 +207,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         return changed;
     }
 
+      //  Method to update the amount of bags associated with a certain tag number. 
     @Override
     public synchronized Boolean changeNumber(int id, String user, int size) throws RemoteException, RejectedException, BDBException {
         String failureMsg = "Could not change the following bag: " + id;
@@ -202,6 +231,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         return changed;
     }
 
+     //  Method to update the room number of bags associated with a certain tag number. 
     @Override
     public synchronized Boolean changeRoom(int id, String user, String room) throws RemoteException, RejectedException, BDBException {
         String failureMsg = "Could not change the following bag: " + id;
@@ -225,7 +255,7 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         return changed;
     }
 
-    //ethod to remove the bag from the database
+    //Method to remove the bag from the database
     @Override
     public synchronized Boolean delete(int id, String user) throws RemoteException, RejectedException, BDBException {
         Boolean deleted = false;
@@ -249,32 +279,13 @@ public class Controller extends UnicastRemoteObject implements BagStorage {
         writer.close();
 
     }
-//Retrieves current date and time for the log (includes seconds
-
+    
+//Retrieves current date and time for the log (includes seconds)
     private String getDate() {
         LocalDateTime now = LocalDateTime.now();
         String time = dtf2.format(now);
         return time;
     }
 
-    @Override
-    public List<? extends BagsDTO> listAllName(String owner, String user) throws RemoteException, BDBException {
-               try {
-            writeToLog("Request to see all bags stored for: '"+ owner+ "' has been made by " + user);
-            return bagsDB.findAllByOwner(owner);
-        } catch (Exception e) {
-            throw new BDBException("Unable to list accounts.", e);
-        }
-    }
-
-    @Override
-    public List<? extends BagsDTO> listAllStoredBy(String storedBy, String user) throws RemoteException, BDBException {
-         try {
-            writeToLog("Request to see all bags stored by: '"+ storedBy+ "' has been made by " + user);
-            return bagsDB.findAllByOwner(storedBy);
-        } catch (Exception e) {
-            throw new BDBException("Unable to list accounts.", e);
-        }
-    }
 
 }

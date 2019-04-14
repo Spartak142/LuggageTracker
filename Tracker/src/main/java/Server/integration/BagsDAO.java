@@ -133,7 +133,7 @@ public class BagsDAO {
         return null;
     }
 
-    // Retrieves all existing bags
+    // Retrieves all stored bags
     public List<Bags> findAllBags() throws BDBException {
         String failureMsg = "Could not list the bags.";
         List<Bags> bags = new ArrayList<>();
@@ -147,7 +147,7 @@ public class BagsDAO {
         return bags;
     }
 
-    // Retrieves all existing bags
+    // Retrieves all stored bags owned by a guest
     public List<Bags> findAllByOwner(String owner) throws BDBException, SQLException {
         String failureMsg = "The person has no bags stored.";
         List<Bags> bags = new ArrayList<>();
@@ -161,8 +161,8 @@ public class BagsDAO {
         }
         return bags;
     }
-    // Retrieves all existing bags
 
+    // Retrieves all bags stored by a particular user
     public List<Bags> findAllByStoredBy(String storedBy) throws BDBException, SQLException {
         String failureMsg = "The person has not stored any bags.";
         List<Bags> bags = new ArrayList<>();
@@ -177,7 +177,7 @@ public class BagsDAO {
         return bags;
     }
 
-    //Changes the size of the bag
+    //Changes the amount of bags associated with a tag number
     public void changeBagAmount(int id, int amount) throws BDBException {
         try {
             changeAmountStatement.setInt(1, amount);
@@ -189,6 +189,7 @@ public class BagsDAO {
         }
     }
 
+    //Changes the room number associated with a tag number
     public void changeRoom(int id, String room) throws BDBException {
         try {
             changeRoomStatement.setString(1, room);
@@ -200,7 +201,7 @@ public class BagsDAO {
         }
     }
 
-    //Deletes the bag by it's ownername
+    //Deletes the bag by it's tag number
     public void removeBag(BagsDTO bagToFetch) throws BDBException {
         try {
             removeBagsStmt.setInt(1, bagToFetch.getId());
@@ -210,6 +211,7 @@ public class BagsDAO {
         }
     }
 
+    //Creates the data tables if they do not exist yet.
     private Connection createDatasource(String dbms, String datasource) throws
             ClassNotFoundException, SQLException, BDBException {
         Connection connection = connectToBagServerDB(dbms, datasource);
@@ -234,6 +236,7 @@ public class BagsDAO {
         return connection;
     }
 
+    //Checks whether the account database table exists
     private boolean bserverTableExists(Connection connection) throws SQLException {
         int tableNameColumn = 3;
         DatabaseMetaData dbm = connection.getMetaData();
@@ -247,6 +250,7 @@ public class BagsDAO {
         }
     }
 
+    //Checks whether the bag storage database table exists
     private boolean bagTableExists(Connection connection) throws SQLException {
         int tableNameColumn = 3;
         DatabaseMetaData dbm = connection.getMetaData();
@@ -260,6 +264,7 @@ public class BagsDAO {
         }
     }
 
+    // Connection to the database server
     private Connection connectToBagServerDB(String dbms, String datasource)
             throws ClassNotFoundException, SQLException, BDBException {
         try {
@@ -272,6 +277,7 @@ public class BagsDAO {
         return DriverManager.getConnection("jdbc:derby://localhost:1527/Bservertrial1;create=true");
     }
 
+    // Preparing SQL statements
     private void prepareStatements(Connection connection) throws SQLException {
         createAccountStmt = connection.prepareStatement("INSERT INTO "
                 + TABLE_NAME + " VALUES (?, ?)");

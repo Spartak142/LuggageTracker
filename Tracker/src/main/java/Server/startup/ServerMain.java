@@ -12,7 +12,7 @@ import Server.integration.BDBException;
 //Starts the Bag Server
 public class ServerMain {
 
-    private static final String USAGE = "java fserverjdbc.Server [bserver name in rmi registry] "
+    private static final String USAGE = "java bserverjdbc.Server [bserver name in rmi registry] "
             + "[bagserver database name] [dbms: derby or mysql]";
     private String serverName = BagStorage.BAGSERVER_NAME_IN_REGISTRY;
     private String datasource = "Bservertrial1";

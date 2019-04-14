@@ -16,10 +16,12 @@ public class ConnectionManager {
         return participantId;
     }
 
+    //Checks whether a particular client is online
     public Boolean isOnline(String id) {
         return participants.containsKey(id);
     }
 
+    //Removes a particular client from the connected list.
     public void disconnect(String id) {
         participants.remove(id);
     }

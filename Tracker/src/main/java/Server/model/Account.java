@@ -35,7 +35,4 @@ public class Account implements AccountDTO {
         return password;
     }
 
-    private String accountInfo() {
-        return " " + this;
-    }
 }
