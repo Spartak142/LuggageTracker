@@ -3,7 +3,7 @@ package Client.view;
 public enum Command {
     /**
      * Creates a new account with username and password provided. A special
-     * administrative password needed to register.
+     * administrative password required to register.
      */
     REGISTER,
     /**
@@ -35,11 +35,11 @@ public enum Command {
      */
     CHANGE,
     /**
-     * Updates the number of bags or the room or both of the guest
+     * Updates the number of bags associated with the tag number
      */
     CHANGEN,
     /**
-     * Updates the number of bags or the room or both of the guest
+     * Updates the room number of the tag number
      */
     CHANGER,
     /**
@@ -51,11 +51,11 @@ public enum Command {
      */
     HELP,
     /**
-     * logout to e.g. change the user basically ghost mode
+     * logout to e.g. ability to change the user
      */
     LOGOUT,
     /**
-     * Leave the chat application.
+     * Leave the storage application.
      */
     QUIT,
     /**

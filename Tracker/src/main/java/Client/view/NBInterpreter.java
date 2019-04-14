@@ -24,7 +24,7 @@ public class NBInterpreter implements Runnable {
     private String[] commandList = new String[15];
     /*Keeps track if someone is logged in. The main reason why this check is done on the client side
     for most of the commands is to improve server performance, since it will not have to even deal with the requests
-    from non-logged in users. This is important since server is not multithreaded and all the requesting lients are "queing" up for service.*/
+    from non-logged in users. */
     private boolean lIn = false;
     private String nBID;
     private final Client myRemoteObj;
@@ -44,8 +44,8 @@ public class NBInterpreter implements Runnable {
     }
 
     /**
-     * Interprets and performs user commands, by calling appropriate commands
-     * from server. Some of the used methods are defined below
+     * Interprets and performs user commands, by making appropriate calls to the
+     * server. Some of the used methods are defined below
      */
     @Override
     public void run() {
@@ -115,6 +115,7 @@ public class NBInterpreter implements Runnable {
         return console.nextLine();
     }
 
+    //Login request
     private void login(String username, String password, AccountDTO acct) throws RemoteException, AccountException {
         if (lIn) {
             outMgr.println("Already logged in as " + activeUser);
@@ -126,7 +127,8 @@ public class NBInterpreter implements Runnable {
             lIn = true;
         }
     }
-
+    
+    // Request to list all stored bags
     private void listAll() throws RemoteException, BDBException {
         if (lIn) {
             List<? extends BagsDTO> bags = bserver.listAll(activeUser);
@@ -137,7 +139,8 @@ public class NBInterpreter implements Runnable {
             outMgr.println("You have to be logged in to view stored bags");
         }
     }
-
+    
+    //Request to list all bags stored under certain ownername
     private void listOwner(String name, String surname) throws RemoteException, BDBException {
         if (lIn) {
             String owner = name + " " + surname;
@@ -150,6 +153,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
+     //Request to list all bags stored by a certain user
     private void listStoredBy(String storedBy) throws RemoteException, BDBException {
         if (lIn) {
             List<? extends BagsDTO> bags = bserver.listAllStoredBy(storedBy, activeUser);
@@ -161,6 +165,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
+    //Request to store a bag
     private void store(String input) throws RemoteException, BDBException, RejectedException {
         if (lIn) {
             String name, room;
@@ -196,6 +201,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
+    //request to check contents of a bag with a certain tag number.
     private void check(String tagN) throws RemoteException, RejectedException, BDBException {
         if (!lIn) {
             outMgr.println("You have to be logged in to update the storage");
@@ -208,7 +214,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
-    //Updates amount and the room
+    //Request to update amount and the room numbers
     private void change(String tagN, String size, String room) throws RemoteException, BDBException, RejectedException {
         if (!lIn) {
             outMgr.println("You have to be logged in to change bags");
@@ -222,7 +228,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
-    //Updates the room
+    //Request to update the room number
     private void updateRoom(String input) throws RemoteException, BDBException, RejectedException {
         if (!lIn) {
             outMgr.println("You have to be logged in to change bags");
@@ -252,7 +258,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
-    //Updates the number of bags
+    // Request to update the number of bags
     private void updateNumber(String tagN, String amount) throws RemoteException, BDBException, RejectedException {
         if (!lIn) {
             outMgr.println("You have to be logged in to change bags");
@@ -266,6 +272,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
+    //request to fetch the bag (removes from the storage)
     private void fetch(String tagN) throws RemoteException, RejectedException, BDBException {
         if (!lIn) {
             outMgr.println("You have to be logged in to delete bags");
@@ -278,6 +285,7 @@ public class NBInterpreter implements Runnable {
         }
     }
 
+    //Method to display commands and their functionality to the user
     private void defineCommandUsage() {
         commandList[0] = new String(" Help- lists all the available commands in the program and the way they are supposed to be executed. Commands are not case sensitive.");
         commandList[1] = new String(" Register- type register, and submit your desired username, password and current adminpassword. If the username is taken you will have to choose a new one." + "\n" + "     Username and password are case sensitive. To execute: 'register user password adminpassword'");
