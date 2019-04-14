@@ -22,9 +22,8 @@ public class Bags implements BagsDTO {
         this.id = id;
 
     }
-    
-    
-   public Bags(int id, String name, String storedBy, int number, String room) {
+
+    public Bags(int id, String name, String storedBy, int number, String room) {
         this.name = name;
         this.number = number;
         this.room = room;
@@ -33,8 +32,8 @@ public class Bags implements BagsDTO {
 
     }
 
-    public Bags(String name, String storedBy, int number, String room, BagsDAO bsd) {
-        this.bagServerDB = bsd;
+    public Bags(String name, String storedBy, int number, String room) {
+
         this.name = name;
         this.number = number;
         this.room = room;
@@ -42,55 +41,6 @@ public class Bags implements BagsDTO {
         id = createId();
 
     }
-        public Bags(String name, String storedBy, int number, String room) {
-        
-        this.name = name;
-        this.number = number;
-        this.room = room;
-        this.storedBy = storedBy;
-        id = createId();
-
-    }
-
-    //1 bag by default
-    public Bags(String name, String storedBy, String room, BagsDAO bsd) {
-        this.bagServerDB = bsd;
-        this.name = name;
-        this.number = 1;
-        this.room = room;
-        id = createId();
-    }
-
-    //Not connected to the database
-    public Bags(String name, int number, String room) {
-        this.name = name;
-        this.number = number;
-        this.room = room;
-        id = createId();
-    }
-
-    // if no room provided the guest is not checked in
-    public Bags(String name, String storedBy, int number) {
-        this.name = name;
-        this.number = number;
-        this.room = "Not checked in";
-        this.storedBy = storedBy;
-        id = createId();
-    }
-
-    public Bags(String name, String storedBy) {
-        this.name = name;
-        this.number = 1;
-        this.room = "Not checked in";
-        this.storedBy = storedBy;
-        id = createId();
-    }
-
-    public Bags(String name, BagsDAO bagDB) {
-        this.name = name;
-        this.bagServerDB = bagDB;
-    }
-
 
     public String toString() {
         StringBuilder stringRepresentation = new StringBuilder();
